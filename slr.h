@@ -96,15 +96,10 @@
 14.5 57,800.00 	
 15 	 81,900.00 	
 15.5 116,000.00 	
-16 	 164,000.00 	
-16.5 232,000.00 	
-17 	 328,000.00 	
-17.5 464,000.00 	
-18 	 656,000.00
 */
 
 typedef enum { MANUAL = 0, EOS} lens_t;
-typedef enum { EOS50MM12 = 0, EOS50MM14, EOS50MM18, EOS85MM12, EOS85MM18} eos_t;
+typedef enum { EOSMANUAL = 0, EOS50MM12, EOS50MM14, EOS50MM18, EOS85MM12, EOS85MM18} eos_t;
 typedef enum { M = 0, AV, TV} cameramode_t;
 
 /* -- Global variables ---------------------------------------------- */ 
@@ -119,7 +114,7 @@ cameramode_t Mode; /* current camera mode set by user                 */
 /* ------------------------------------------------------------------ */
 
 /** film sensitivity in ISO values - 160 will be treated as 100 ISO */
-const uint16_t ISO_values[]={ 0,25,50,100,200,400,800,1600,3200};
+const uint16_t ISO_values[8]={25,50,100,200,400,800,1600,3200};
 
 /** Shutter speeds.
  *  the array index will be used to determine if microseconds!
@@ -406,38 +401,38 @@ const uint8_t TV18000_400[] = {0, 0, 0, 0, 0, 0, 0,  0,  0,  0,  0,  1,  2,  3, 
  *
  *  The array will contain the indices in Tv_speed[] array.
  */
-const uint8_t AV01_800[] = {}; 
-const uint8_t AV14_800[] = {}; 
-const uint8_t AV02_800[] = {}; 
-const uint8_t AV28_800[] = {}; 
-const uint8_t AV04_800[] = {}; 
-const uint8_t AV56_800[] = {}; 
-const uint8_t AV08_800[] = {}; 
-const uint8_t AV11_800[] = {}; 
-const uint8_t AV16_800[] = {}; 
-const uint8_t AV22_800[] = {}; 
-const uint8_t AV32_800[] = {}; 
-const uint8_t AV45_800[] = {}; 
-const uint8_t AV64_800[] = {}; 
+const uint8_t AV01_800[] = {11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1,  0,  0,  0, 0, 0}; 
+const uint8_t AV14_800[] = {12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1,  0,  0, 0, 0}; 
+const uint8_t AV02_800[] = {13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1,  0, 0, 0}; 
+const uint8_t AV28_800[] = {14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2,  1, 0, 0}; 
+const uint8_t AV04_800[] = {15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3,  2, 1, 0}; 
+const uint8_t AV56_800[] = {15, 15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4,  3, 2, 1}; 
+const uint8_t AV08_800[] = {15, 15, 15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5,  4, 3, 2}; 
+const uint8_t AV11_800[] = {15, 15, 15, 15, 14, 13, 12, 11, 10,  9,  8,  7,  6,  5, 4, 3}; 
+const uint8_t AV16_800[] = {15, 15, 15, 15, 15, 14, 13, 12, 11, 10,  9,  8,  7,  6, 5, 4}; 
+const uint8_t AV22_800[] = {15, 15, 15, 15, 15, 15, 14, 13, 12, 11, 10,  9,  8,  7, 6, 5}; 
+const uint8_t AV32_800[] = {15, 15, 15, 15, 15, 15, 15, 14, 13, 12, 11, 10,  9,  8, 7, 6}; 
+const uint8_t AV45_800[] = {15, 15, 15, 15, 15, 15, 15, 15, 14, 13, 12, 11, 10,  9, 8, 7}; 
+const uint8_t AV64_800[] = {15, 15, 15, 15, 15, 15, 15, 15, 15, 14, 13, 12, 11, 10, 9, 8}; 
 
 /** Shutter priority tables with regard to EV value (Ev=[0..15]) 
  *
  *  The array will contain the indices in Av_values[] array.
  */
-const uint8_t TV00001_800[] = {}; 
-const uint8_t TV00012_800[] = {}; 
-const uint8_t TV00014_800[] = {}; 
-const uint8_t TV00018_800[] = {}; 
-const uint8_t TV00115_800[] = {}; 
-const uint8_t TV00130_800[] = {}; 
-const uint8_t TV00160_800[] = {}; 
-const uint8_t TV01125_800[] = {}; 
-const uint8_t TV01250_800[] = {}; 
-const uint8_t TV01500_800[] = {}; 
-const uint8_t TV11000_800[] = {}; 
-const uint8_t TV12000_800[] = {}; 
-const uint8_t TV14000_800[] = {}; 
-const uint8_t TV18000_800[] = {}; 
+const uint8_t TV00001_800[] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13,  0,  0,  0,  0,  0,  0}; 
+const uint8_t TV00012_800[] = {3, 4, 5, 6, 7, 8,  9, 10, 11, 12, 13,  0,  0,  0,  0,  0}; 
+const uint8_t TV00014_800[] = {2, 3, 4, 5, 6, 7,  8,  9, 10, 11, 12, 13,  0,  0,  0,  0}; 
+const uint8_t TV00018_800[] = {1, 2, 3, 4, 5, 6,  7,  8,  9, 10, 11, 12, 13,  0,  0,  0}; 
+const uint8_t TV00115_800[] = {0, 1, 2, 3, 4, 5,  6,  7,  8,  9, 10, 11, 12, 13,  0,  0}; 
+const uint8_t TV00130_800[] = {0, 0, 1, 2, 3, 4,  5,  6,  7,  8,  9, 10, 11, 12, 13,  0}; 
+const uint8_t TV00160_800[] = {0, 0, 0, 1, 2, 3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13}; 
+const uint8_t TV01125_800[] = {0, 0, 0, 0, 1, 2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12}; 
+const uint8_t TV01250_800[] = {0, 0, 0, 0, 0, 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11}; 
+const uint8_t TV01500_800[] = {0, 0, 0, 0, 0, 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10}; 
+const uint8_t TV11000_800[] = {0, 0, 0, 0, 0, 0,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9}; 
+const uint8_t TV12000_800[] = {0, 0, 0, 0, 0, 0,  0,  0,  1,  2,  3,  4,  5,  6,  7,  8}; 
+const uint8_t TV14000_800[] = {0, 0, 0, 0, 0, 0,  0,  0,  0,  1,  2,  3,  4,  5,  6,  7}; 
+const uint8_t TV18000_800[] = {0, 0, 0, 0, 0, 0,  0,  0,  0,  0,  1,  2,  3,  4,  5,  6}; 
 /* ==================== END 800 ISO TABLES ================================== */
 
 /* ========================================================================== */
