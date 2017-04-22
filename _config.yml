@@ -1,2 +1,2 @@
-theme: jekyll-theme-modernist
+theme: jekyll-theme-midnight
 gem "github-pages", group: :jekyll_plugins
