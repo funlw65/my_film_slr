@@ -1,3 +1,6 @@
+[Go back to the main site](https://funlw65.github.io/)
+<hr />
+
 # My film SLR camera 
 
 A homemade film SLR camera (a TLR is also possible), which can use manual and Canon EOS Lenses. If is a classic SLR, the shutter can be mechanical (horizontal cloth or vertical metal) or electromechanical (in which case, it is borrowed from a SLR or DSLR defective camera). 
