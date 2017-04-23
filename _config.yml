@@ -1,4 +1,6 @@
 theme: jekyll-theme-midnight
+title: My SLR
+description: a DIY SLR film camera
 gem "github-pages", group: :jekyll_plugins
 gems:
   - jemoji
