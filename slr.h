@@ -4,7 +4,8 @@
  *    D I Y   F I L M   S L R   C A M E R A
  *    -------------------------------------
  *    - using a Canon EOS EF Lens or a manual lens;
- *    - using Av, Tv, M modes;
+ *    - using a manual mode if lens and shutter are manual and mechanical
+ *    - using Canon Av and Tv modes if shutter and lens accept digital commands 
  *    - using a TSL2591 I2C sensor - I have to port Adafruit lib to C language;
  *    - using an STM32L1 CortexM3 microcontroller.
  */ 
