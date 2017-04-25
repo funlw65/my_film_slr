@@ -1,5 +1,5 @@
-/**  (c) Vasile Guta-Ciucur, funlw65@gmail.com
- *   Under the MIT license (see the LICENSE file).
+/**  (c) Vasile Guta-Ciucur, funlw65@gmail.com, all rights reserved
+ *   Licensed under the MIT license (see the LICENSE file).
  *
  *    D I Y   F I L M   S L R   C A M E R A
  *    -------------------------------------
@@ -18,100 +18,22 @@
 
 /** FOREWORDS
  *  ---------
- *  Ha! Let's start with a lame excuse: I have no idea what to do yet!
- *  But, considering that my DIY SLR has to emulate a mechanical film
- *  camera, I have to go with full stops and extending this limitation
- *  (he he, can you really extend a limitation?) over the EOS lens 
- *  as well.
- * 
- *  Still, why full stops when I have already the 1/3 values 
- *  defined in the Canon DSLR camera for aperture and shutter speed? 
- *  For film, the "exposure table" rule works with full stops and I have 
- *  already the table reference so, it is simple, will do for now. 
- * 
- *  Excuses, excuses... For 1/3 stops I should invent new EV values...
- *  Tempting! But lets stay faithful to our objectives.
- * 
- *  BTW! One of the two limitations I won't try to mendle is the 
+ *  One of the two limitations I won't try to mendle is the 
  *  lightmeter sensor limitation. The range is from 0 EV to 15 EV. 
+ *
  *  The second limitation is dictated by the shutter's hardware 
  *  capabilities. If is handmade (Kevin Kadooka's one leaf shutter), it 
  *  will have a maximum speed of 1/125 of a second. If is recovered from 
  *  a more recent SLR film camera, there will be no limitation up to 
  *  1/1000 or 1/2000 (unless is from a more capable fullframe Canon DSLR).
+ *  And, anything bellow 1 sec. speed is considered bulb mode - here, the 
+ *  firmware won't help you to calculate your long exposures.
  * 
  */
- 
-/** DOCUMENTATION 
- *  =============
- */
- 
-/* SHUTTER SPEEDS in micro and milliseconds
-1/8000 = 125 microseconds
-1/4000 = 250 -""-
-1/2000 = 500 
-1/1000 = 1   millisecond
-1/500  = 2   -""-
-1/250  = 4
-1/125  = 8
-1/60   = 17  
-1/30   = 33
-1/15   = 67
-1/8    = 125
-1/4    = 250
-1/2    = 500
-1      = 1000
-*/
-
-/* EV to LUX table at 100 ISO
-0    2.5
-0.5  3.5
-1 	 5.00 	
-1.5  7.00 	
-2 	 10.00 	
-2.5  14.00 	
-3 	 20.00 	
-3.5  28.00 	
-4 	 40.00 	
-4.5  56.00 	
-5 	 80.00 	
-5.5  112.00 	
-6 	 160.00 	
-6.5  225.00 	
-7 	 320.00 	
-7.5  450.00 	
-8 	 640.00 	
-8.5  900.00 	
-9 	 1,280.00 	
-9.5  1,800.00 	
-10 	 2,600.00 	
-10.5 3,600.00 	
-11 	 5,120.00 	
-11.5 7,200.00 	
-12 	 10,240.00 	
-12.5 14,400.00 	
-13 	 20,480.00 	
-13.5 28,900.00 	
-14 	 40,960.00 	
-14.5 57,800.00 	
-15 	 81,900.00 	
-15.5 116,000.00 	
-*/
 
 typedef enum { MANUAL = 0, EOS} lens_t;
-typedef enum { EOSMANUAL = 0, EOS50MM12, EOS50MM14, EOS50MM18, EOS85MM12, EOS85MM18} eos_t;
-typedef enum { M = 0, AV, TV} cameramode_t;
-
-/* -- Global variables ---------------------------------------------- */ 
-uint8_t  EV; /* using only the integer values of it                   */
-float    LUX;/* this comes form the TSL2591 library                   */
-uint16_t ISO;/* current ISO - index to the ISO_values[] array         */
-uint8_t  Av; /* current aperture - index to the Av_values[] array     */
-uint8_t  Tv; /* current shutter speed - index to the ST_speed[] array */
-lens_t   LensType; /* current lens type                               */
-eos_t    EOSModel; /* current EOS lens model                          */
-cameramode_t Mode; /* current camera mode set by user                 */
-/* ------------------------------------------------------------------ */
+typedef enum { EOS50MM12 = 0, EOS50MM14, EOS50MM18, EOS85MM12, EOS85MM18} eos_t;
+typedef enum { IS = 0, MA, MT, AV, TV} cameramode_t;
 
 /** film sensitivity in ISO values - 160 will be treated as 100 ISO */
 const uint16_t ISO_values[8]={25,50,100,200,400,800,1600,3200};
@@ -161,12 +83,19 @@ const uint16_t Tv_markings[]=
 };
 
 
-/** USER CONSTANT - user settable.
+/** USER CONSTANTS - user settable.
  *  You must set the maximum speed of your shutter by specifying the 
  *  index inside the ST_speed[] array. Default is 4, 
  *  meaning ST_speed[4] = 1, meaning 1/1000 maximum shutter speed.
+ *
+ *  And you must set the minimum aperture value for the manual lens you will use
+ *   it is 16 by default...
+ *  I know, the shutter is a constant, a fixed mechanism, and a lens is a 
+ *  variable, something you can change anytime, but let this be for a while.
+ *  For the EOS lenses, this will be set automatically.
  */
 const uint8_t Tv_max_speed = 4; 
+const uint8_t Av_min_aperture = 9;
 
 /** aperture values (exceptions 1.2=12 1.7=20 1.8=22)
  *                               8                                        88  96 104
@@ -519,26 +448,101 @@ const uint8_t TV14000_3200[] = {0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 const uint8_t TV18000_3200[] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8}; 
 /* ==================== END 3200 ISO TABLES ================================= */
 
+/* -- Global variables -------------------------------------------------- */ 
+uint8_t  SLR_EV; /* using only the integer values of it                   */
+float    SLR_LUX;/* this comes form the TSL2591 library                   */
+uint8_t  SLR_ISO;/* current ISO - index to the ISO_values[] array         */
+uint8_t  SLR_Av; /* current aperture - index to the Av_values[] array     */
+uint8_t  SLR_Tv; /* current shutter speed - index to the Tv_speed[] array */
+lens_t   SLR_LensType; /* current lens type                               */
+eos_t    SLR_EOSModel; /* current EOS lens model                          */
+cameramode_t SLR_Mode; /* current camera mode set by user                 */
+/* ---------------------------------------------------------------------- */
 
 /** FUNCTIONS
  *  ---------
  */
+ 
+/* Sets the initial values for the ISO, Aperture, Shutter speed, etc.
+ *
+ */ 
+void slr_init(void){
+	/* for start, lets set some safe values */
+	SLR_ISO = 2; /* ISO 100 - a good start for ISO */
+	SLR_Av  = 6; /* Aperture 5.6 - any lens have that */
+	SLR_Tv  = 7; /* Shutter speed 1/125 */
+	SLR_EV  = 13;/* Light is ok */
+} 
+
+/* It will read the sensor at a press of a button - returns a code for success
+ *  and lights a green led when the exposure is read correctly.
+ * Requires a functional light sensor library... 
+ */
+uint8_t read_exposure(void){
+	/**/
+	
+}
 
 /* sets the EV value from the LUX value returned by the light sensor */
-uint8_t getEV(float LUXvalue){
-	/**/
-};
+void getEV(float LUXvalue){
+	if(LUXvalue  < 3.5)                                    {SLR_EV = 0; return;} 
+	if((LUXvalue > 3.4)     && (LUXvalue < 7))             {SLR_EV = 1; return;}
+	if((LUXvalue > 6.9)     && (LUXvalue < 14))            {SLR_EV = 2; return;}
+	if((LUXvalue > 13.9)    && (LUXvalue < 28))            {SLR_EV = 3; return;}
+	if((LUXvalue > 27.9)    && (LUXvalue < 56))            {SLR_EV = 4; return;}
+	if((LUXvalue > 55.9)    && (LUXvalue < 112))           {SLR_EV = 5; return;}
+	if((LUXvalue > 111.9)   && (LUXvalue < 225))           {SLR_EV = 6; return;}
+	if((LUXvalue > 224.9)   && (LUXvalue < 450))           {SLR_EV = 7; return;}
+	if((LUXvalue > 449.9)   && (LUXvalue < 900))           {SLR_EV = 8; return;}
+	if((LUXvalue > 899.9)   && (LUXvalue < 1800))          {SLR_EV = 9; return;}
+	if((LUXvalue > 1799.9)  && (LUXvalue < 3600))          {SLR_EV =10; return;}
+	if((LUXvalue > 3599.9)  && (LUXvalue < 7200))          {SLR_EV =11; return;}
+	if((LUXvalue > 7199.9)  && (LUXvalue < 14400))         {SLR_EV =12; return;}
+	if((LUXvalue > 14399.9) && (LUXvalue < 28900))         {SLR_EV =13; return;}
+	if((LUXvalue > 28899.9) && (LUXvalue < 57800))         {SLR_EV =14; return;}
+	if(LUXvalue  > 57799.9)                                {SLR_EV =15; return;}
+}
 
-/* sets the index of aperture value if in TV mode */
+
+void setEOSlens(){
+	/**/
+}
+
+void setSLRmode(void){
+	/**/
+}
+
+void setISOindex(uint8_t dir){
+	/**/
+}
+
+/* sets the Av of the lens according to the selected lens */
+void setAVindex(uint8_t dir){
+	/**/
+}
+
+/* sets the Tv according to the hardware capabilities of the shutter. 
+ * the maximum speed of the shutter must be declared by the user.
+ */
+void setTVindex(uint8_t dir){
+	/**/
+}
+
+
+uint16_t getISOvalue(void){
+	/**/
+}
+
+/* gets the index of aperture value if in TV mode */
 uint8_t getAVindex(void){
 	/**/
-};
+}
 
-/* sets the index of shutter speed value if in AV mode */
+/* gets the index of shutter speed value if in AV mode */
 uint8_t getTVindex(void){
 	/**/
-};
+}
 
 
 
- 
+
