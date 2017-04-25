@@ -460,14 +460,14 @@ cameramode_t SLR_Mode; /* current camera mode set by user                 */
 /* ---------------------------------------------------------------------- */
 
 /** FUNCTIONS
- *  ---------
+ *  =========
  */
  
 /* Sets the initial values for the ISO, Aperture, Shutter speed, etc.
  *
  */ 
 void slr_init(void){
-	/* for start, lets set some safe values */
+	/* for start, lets set some safe values, no correlation between them yet */
 	SLR_ISO = 2; /* ISO 100 - a good start for ISO */
 	SLR_Av  = 6; /* Aperture 5.6 - any lens have that */
 	SLR_Tv  = 7; /* Shutter speed 1/125 */
@@ -504,11 +504,11 @@ void getEV(float LUXvalue){
 }
 
 
-void setEOSlens(){
+void setEOSlens(uint8_t dir){
 	/**/
 }
 
-void setSLRmode(void){
+void setSLRmode(uint8_t dir){
 	/**/
 }
 
